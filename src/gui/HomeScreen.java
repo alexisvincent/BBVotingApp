@@ -3,9 +3,7 @@ package gui;
 import components.BFooter;
 import components.BMenuBar;
 import components.BPanel;
-import components.BSwitch;
 import components.BTextPane;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -15,7 +13,6 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import javax.swing.JComponent;
-import toolkit.BSettings;
 import toolkit.BToolkit;
 
 /**
@@ -72,7 +69,7 @@ public class HomeScreen extends BPanel {
 
         gc.gridy = 2;
         gc.weighty = 0;
-        this.add(footer, gc);
+        //this.add(footer, gc);
         
         gc.gridx = 0;
         gc.gridy = 0;
@@ -92,7 +89,6 @@ public class HomeScreen extends BPanel {
 
         private GridBagConstraints gc;
         private int panelOpacity;
-        private BSwitch serverSwitch;
         private BTextPane log;
         private JComponent logoPane;
 
@@ -100,12 +96,9 @@ public class HomeScreen extends BPanel {
 
             //variabili
             panelOpacity = 255;
-            serverSwitch = new BSwitch();
             log = new BTextPane();
 
             //setup le variabili
-            serverSwitch.setFont(BSettings.getFont("BSwitch", 12));
-            serverSwitch.setPreferredSize(new Dimension(100, 50));
 
             //begin adding le variabili
             this.setLayout(new GridBagLayout());
@@ -121,7 +114,6 @@ public class HomeScreen extends BPanel {
             gc.insets = new Insets(0, 0, 0, 0);
             gc.fill = GridBagConstraints.NONE;
             gc.anchor = GridBagConstraints.CENTER;
-            this.add(serverSwitch, gc);
             
         }
 
