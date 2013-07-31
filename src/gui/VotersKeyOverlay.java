@@ -13,9 +13,10 @@ import java.awt.Graphics2D;
  *
  * @author alexisvincent
  */
-public class Overlay extends AComponent {
+public class VotersKeyOverlay extends AComponent {
 
-    public Overlay() {
+    public VotersKeyOverlay() {
+        
     }
     @Override
             protected void paintComponent(Graphics g) {
@@ -26,6 +27,5 @@ public class Overlay extends AComponent {
 
                 g2d.setPaint(new Color(34, 34, 34, 255));
                 g2d.fillRoundRect(100, 100, 100, 100, 15, 15);
-
             }
 }

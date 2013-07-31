@@ -1,6 +1,5 @@
 package gui;
 
-import components.AComponent;
 import components.AFrame;
 
 /**
@@ -9,24 +8,24 @@ import components.AFrame;
  */
 public class MainFrame extends AFrame {
 
-    private HomeScreen homeScreen;
-    private AComponent overlay;
+    private StatsScreen statsScreen;
+    private VotersKeyOverlay votersKeyOverlay ;
 
     public MainFrame() {
         super();
 
         //new instances
-        homeScreen = new HomeScreen();
-        overlay = new Overlay();
-        overlay.setVisible(false);
+        statsScreen = new StatsScreen();
+        votersKeyOverlay = new VotersKeyOverlay();
+        votersKeyOverlay.setVisible(false);
 
         //configure this damn FRAME O.o
         this.setResizable(false);
         this.setSize(400, 400);
 
         //begin adding components
-        addPaneltoDefaultLayer(homeScreen);
-        addPaneltoPaletteLayer(overlay);
+        addPaneltoDefaultLayer(statsScreen);
+        addPaneltoPaletteLayer(votersKeyOverlay);
 
         //starting animation
     }

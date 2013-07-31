@@ -19,7 +19,7 @@ import toolkit.BToolkit;
  *
  * @author alexisvincent
  */
-public class HomeScreen extends BPanel {
+public class StatsScreen extends BPanel {
     //declare components
 
     private BMenuBar menubar;
@@ -27,7 +27,7 @@ public class HomeScreen extends BPanel {
     private BFooter footer;
     private JComponent logoPane;
 
-    public HomeScreen() {
+    public StatsScreen() {
         //init components
         menubar = new BMenuBar();
         homeScreenPanel = new HomeScreenPanel();
