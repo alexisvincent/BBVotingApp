@@ -37,21 +37,21 @@ public class StatsScreen extends BPanel {
         statsScreenPanel = new StatsScreenPanel();
         footer = new BFooter();
         logoPane = new JComponent() {
-                Image logo = BToolkit.getImage("logo");
-                double logoEnlargement = 1.5;
-                Point pt = new Point(200-(int)(logo.getWidth(null)*logoEnlargement)/2, 200-(int)(logo.getHeight(null)*logoEnlargement)/2);
+            Image logo = BToolkit.getImage("logo");
+            double logoEnlargement = 1.5;
+            Point pt = new Point(200 - (int) (logo.getWidth(null) * logoEnlargement) / 2, 200 - (int) (logo.getHeight(null) * logoEnlargement) / 2);
 
-                @Override
-                public void paint(Graphics g) {
-                    Graphics2D g2d = (Graphics2D) g;
-                    g2d.setComposite(BToolkit.makeComposite(50));
-                    g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                    g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-                    g2d.drawImage(logo, pt.x, pt.y, (int)(logo.getWidth(null)*logoEnlargement), (int)(logo.getHeight(null)*logoEnlargement), this);
-                }
-            };
+            @Override
+            public void paint(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setComposite(BToolkit.makeComposite(50));
+                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+                g2d.drawImage(logo, pt.x, pt.y, (int) (logo.getWidth(null) * logoEnlargement), (int) (logo.getHeight(null) * logoEnlargement), this);
+            }
+        };
         //set ResultScreen properties
         //add components to ResultScreen
         GridBagConstraints gc = new GridBagConstraints();
@@ -74,7 +74,7 @@ public class StatsScreen extends BPanel {
         gc.gridy = 2;
         gc.weighty = 0;
         //this.add(footer, gc);
-        
+
         gc.gridx = 0;
         gc.gridy = 0;
         gc.gridwidth = 1;
@@ -101,12 +101,14 @@ public class StatsScreen extends BPanel {
             panelOpacity = 255;
 
             //setup le variabili
-            stats = new AList(new ResultsListModel("ElectionName"));
+            stats = new AList(new CandidatesListModel());
             stats.setPreferredSize(new Dimension(350, 300));
+
+            //getCandidates
             ArrayList<AListItem> items = new ArrayList<>();
-            items.add(new AListItem("La di Dah"));
+            items.add(new CandidateListItem("La di Dah"));
             stats.setItems(items);
-            
+
             //begin adding le variabili
             this.setLayout(new GridBagLayout());
             gc = new GridBagConstraints();
@@ -134,10 +136,41 @@ public class StatsScreen extends BPanel {
             Graphics2D g2d = (Graphics2D) g;
             g2d.setComposite(BToolkit.makeComposite(panelOpacity));
         }
-        
-        private class ResultsListModel extends AListModel {
 
-            public ResultsListModel(String electionName) {
+        public class CandidatesListModel extends AListModel {
+
+            public CandidatesListModel() {
+            }
+
+            @Override
+            public void setItems(ArrayList<AListItem> items) {
+                if (!items.isEmpty() && items.get(0) instanceof CandidateListItem) {
+                    //ArrayList<CandidateListItem> candidateItems = new ArrayList<>();
+
+                    setItems(items);
+
+//                    for (AListItem item : items) {
+//                        candidateItems.add((CandidateItem)item);
+//                    }
+
+
+                } else {
+                    System.out.println("Invalid Items");
+                }
+            }
+        }
+
+        public class CandidateListItem extends AListItem {
+
+            private CandidateListItem(String displayName) {
+                super(displayName);
+            }
+
+            public CandidateListItem() {
+            }
+            
+            @Override
+            protected void paintComponent(Graphics g) {
             }
         }
     }
