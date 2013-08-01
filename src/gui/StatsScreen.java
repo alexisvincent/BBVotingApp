@@ -1,9 +1,12 @@
 package gui;
 
+import components.AList;
+import components.AListItem;
+import components.AListModel;
 import components.BFooter;
 import components.BMenuBar;
 import components.BPanel;
-import components.BTextPane;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
@@ -12,6 +15,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.util.ArrayList;
 import javax.swing.JComponent;
 import toolkit.BToolkit;
 
@@ -23,14 +27,14 @@ public class StatsScreen extends BPanel {
     //declare components
 
     private BMenuBar menubar;
-    private HomeScreenPanel homeScreenPanel;
+    private StatsScreenPanel statsScreenPanel;
     private BFooter footer;
     private JComponent logoPane;
 
     public StatsScreen() {
         //init components
         menubar = new BMenuBar();
-        homeScreenPanel = new HomeScreenPanel();
+        statsScreenPanel = new StatsScreenPanel();
         footer = new BFooter();
         logoPane = new JComponent() {
                 Image logo = BToolkit.getImage("logo");
@@ -65,7 +69,7 @@ public class StatsScreen extends BPanel {
 
         gc.gridy = 1;
         gc.weighty = 1;
-        this.add(homeScreenPanel, gc);
+        this.add(statsScreenPanel, gc);
 
         gc.gridy = 2;
         gc.weighty = 0;
@@ -81,25 +85,28 @@ public class StatsScreen extends BPanel {
 
     }
 
-    public HomeScreenPanel getHomeScreenPanel() {
-        return homeScreenPanel;
+    public StatsScreenPanel getHomeScreenPanel() {
+        return statsScreenPanel;
     }
 
-    class HomeScreenPanel extends JComponent {
+    class StatsScreenPanel extends JComponent {
 
         private GridBagConstraints gc;
         private int panelOpacity;
-        private BTextPane log;
-        private JComponent logoPane;
+        private AList stats;
 
-        public HomeScreenPanel() {
+        public StatsScreenPanel() {
 
             //variabili
             panelOpacity = 255;
-            log = new BTextPane();
 
             //setup le variabili
-
+            stats = new AList(new ResultsListModel("ElectionName"));
+            stats.setPreferredSize(new Dimension(350, 300));
+            ArrayList<AListItem> items = new ArrayList<>();
+            items.add(new AListItem("La di Dah"));
+            stats.setItems(items);
+            
             //begin adding le variabili
             this.setLayout(new GridBagLayout());
             gc = new GridBagConstraints();
@@ -114,7 +121,7 @@ public class StatsScreen extends BPanel {
             gc.insets = new Insets(0, 0, 0, 0);
             gc.fill = GridBagConstraints.NONE;
             gc.anchor = GridBagConstraints.CENTER;
-            
+            this.add(stats, gc);
         }
 
         public void animate(String action) {
@@ -126,6 +133,12 @@ public class StatsScreen extends BPanel {
         protected void paintComponent(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
             g2d.setComposite(BToolkit.makeComposite(panelOpacity));
+        }
+        
+        private class ResultsListModel extends AListModel {
+
+            public ResultsListModel(String electionName) {
+            }
         }
     }
 }
