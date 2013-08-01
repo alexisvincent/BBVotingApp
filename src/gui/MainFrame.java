@@ -8,25 +8,35 @@ import components.AFrame;
  */
 public class MainFrame extends AFrame {
 
-    private StatsScreen statsScreen;
-    private VotersKeyOverlay votersKeyOverlay ;
+    private static HomeScreen homeScreen;
+    private static VotersKeyOverlay votersKeyOverlay ;
 
     public MainFrame() {
         super();
 
         //new instances
-        statsScreen = new StatsScreen();
+        homeScreen = new HomeScreen();
         votersKeyOverlay = new VotersKeyOverlay();
         votersKeyOverlay.setVisible(false);
 
         //configure this damn FRAME O.o
         this.setResizable(false);
-        this.setSize(400, 400);
+        this.setSize(500, 400);
 
         //begin adding components
-        addPaneltoDefaultLayer(statsScreen);
+        addPaneltoDefaultLayer(homeScreen);
         addPaneltoPaletteLayer(votersKeyOverlay);
 
         //starting animation
     }
+    
+    public static HomeScreen getHomeScreen() {
+        return homeScreen;
+    }
+
+    public static VotersKeyOverlay getVotersKeyOverlay() {
+        return votersKeyOverlay;
+    }
+    
+    
 }
