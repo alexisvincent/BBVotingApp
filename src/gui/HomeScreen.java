@@ -40,14 +40,14 @@ public class HomeScreen extends BPanel {
     //declare components
 
     private BMenuBar menubar;
-    private HomeScreenPanel statsScreenPanel;
+    private HomeScreen.HomeScreenPanel statsScreenPanel;
     private BFooter footer;
     private JComponent logoPane;
 
     public HomeScreen() {
         //init components
         menubar = new BMenuBar();
-        statsScreenPanel = new HomeScreenPanel();
+        statsScreenPanel = new HomeScreen.HomeScreenPanel();
         footer = new BFooter();
         logoPane = new JComponent() {
             Image logo = BToolkit.getImage("logo");
@@ -98,7 +98,7 @@ public class HomeScreen extends BPanel {
 
     }
 
-    public HomeScreenPanel getHomeScreenPanel() {
+    public HomeScreen.HomeScreenPanel getHomeScreenPanel() {
         return statsScreenPanel;
     }
     
@@ -108,7 +108,7 @@ public class HomeScreen extends BPanel {
         private int panelOpacity;
         private AList candidateList;
         private BButton voteButton;
-        private CandidateDisplayPane candidateDisplayPane;
+        private HomeScreen.HomeScreenPanel.CandidateDisplayPane candidateDisplayPane;
 
         public HomeScreenPanel() {
 
@@ -127,7 +127,7 @@ public class HomeScreen extends BPanel {
                 
             });
 
-            candidateList = new AList(new CandidatesListModel());
+            candidateList = new AList(new HomeScreen.HomeScreenPanel.CandidatesListModel());
             candidateList.setPreferredSize(new Dimension(180, 275));
 
             //getCandidates
@@ -163,7 +163,7 @@ public class HomeScreen extends BPanel {
                 }
 
                 for (Candidate candidate : candidates) {
-                    items.add(new CandidateListItem(candidate));
+                    items.add(new HomeScreen.HomeScreenPanel.CandidateListItem(candidate));
                 }
 
             } else {
@@ -173,15 +173,15 @@ public class HomeScreen extends BPanel {
             candidateList.setItems(items);
             candidateList.getItems().get(0).setSelected(true);
 
-            candidateDisplayPane = new CandidateDisplayPane();
+            candidateDisplayPane = new HomeScreen.HomeScreenPanel.CandidateDisplayPane();
             candidateDisplayPane.setPreferredSize(new Dimension(300, 300));
 
             candidateList.getModel().addSelectionListener(candidateList.getModel().new SelectionListener() {
                 @Override
                 public void itemSelected(AListItem item) {
-                    candidateDisplayPane.setName(((CandidateListItem) item).getCandidate().getName());
-                    candidateDisplayPane.setInfo(((CandidateListItem) item).getCandidate().getInfo());
-                    candidateDisplayPane.setImage(((CandidateListItem) item).getCandidate().getImage());
+                    candidateDisplayPane.setName(((HomeScreen.HomeScreenPanel.CandidateListItem) item).getCandidate().getName());
+                    candidateDisplayPane.setInfo(((HomeScreen.HomeScreenPanel.CandidateListItem) item).getCandidate().getInfo());
+                    candidateDisplayPane.setImage(((HomeScreen.HomeScreenPanel.CandidateListItem) item).getCandidate().getImage());
                 }
             });
 
@@ -238,7 +238,7 @@ public class HomeScreen extends BPanel {
 
             @Override
             public void setItems(ArrayList<AListItem> items) {
-                if (!items.isEmpty() && items.get(0) instanceof CandidateListItem) {
+                if (!items.isEmpty() && items.get(0) instanceof HomeScreen.HomeScreenPanel.CandidateListItem) {
                     super.setItems(items);
                 } else {
                     System.out.println("Invalid Items: CandidateListItems required");
@@ -253,9 +253,9 @@ public class HomeScreen extends BPanel {
             private Image image;
 
             public CandidateDisplayPane() {
-                name = ((CandidateListItem)HomeScreenPanel.this.candidateList.getSelectedItem()).getCandidate().getName();
-                info = ((CandidateListItem)HomeScreenPanel.this.candidateList.getSelectedItem()).getCandidate().getInfo();
-                image = ((CandidateListItem)HomeScreenPanel.this.candidateList.getSelectedItem()).getCandidate().getImage();
+                name = ((HomeScreen.HomeScreenPanel.CandidateListItem)HomeScreen.HomeScreenPanel.this.candidateList.getSelectedItem()).getCandidate().getName();
+                info = ((HomeScreen.HomeScreenPanel.CandidateListItem)HomeScreen.HomeScreenPanel.this.candidateList.getSelectedItem()).getCandidate().getInfo();
+                image = ((HomeScreen.HomeScreenPanel.CandidateListItem)HomeScreen.HomeScreenPanel.this.candidateList.getSelectedItem()).getCandidate().getImage();
             }
 
             public void setName(String name) {
