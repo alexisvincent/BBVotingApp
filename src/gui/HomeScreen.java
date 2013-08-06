@@ -154,9 +154,9 @@ public class HomeScreen extends BPanel {
 
                 for (int i = 1; i < candidateCount + 1; i++) {
                     Element candidateElement = rootElement.getChild("Candidate" + i);
-                    id = candidateElement.getAttributeValue("id");
-                    name = candidateElement.getAttributeValue("name");
-                    info = candidateElement.getAttributeValue("info");
+                    id = candidateElement.getAttributeValue("ID");
+                    name = candidateElement.getAttributeValue("Name");
+                    info = candidateElement.getAttributeValue("Info");
                     image = null;
 
                     candidates.add(new Candidate(id, name, info, image));
@@ -258,6 +258,8 @@ public class HomeScreen extends BPanel {
                 image = ((HomeScreen.HomeScreenPanel.CandidateListItem)HomeScreen.HomeScreenPanel.this.candidateList.getSelectedItem()).getCandidate().getImage();
             }
 
+            
+            @Override
             public void setName(String name) {
                 this.name = name;
                 repaint();

@@ -5,7 +5,7 @@ import gui.MainFrame;
 import gui.SplashScreen;
 import networking.ElectionProfile;
 import networking.NetworkingClient;
-import settingsEngine.SettingsEngine;
+import settingsEngine.ProfileEngine;
 
 /**
  *
@@ -17,15 +17,15 @@ public class BBVotingApp {
     private static BBVotingApp INSTANCE;
     private static MainFrame mainFrame;
     //Engines
-    private static SettingsEngine settingsEngine;
+    private static ProfileEngine profileEngine;
     private static NetworkingClient networkingClient;
     private static ElectionProfile electionProfile;
 
     public BBVotingApp() {
         splashScreen = new SplashScreen();
         
-        settingsEngine = new SettingsEngine();
-        setElectionProfile(new ElectionProfile(settingsEngine.getServer()));
+        profileEngine = new ProfileEngine();
+        setElectionProfile(profileEngine.getFirstProfile());
         
         mainFrame = new MainFrame();
         splashScreen.setVisible(false);
