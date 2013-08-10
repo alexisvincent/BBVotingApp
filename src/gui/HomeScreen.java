@@ -1,5 +1,6 @@
 package gui;
 
+import components.AColor;
 import components.AComponent;
 import components.AList;
 import components.AListItem;
@@ -17,7 +18,6 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -31,6 +31,8 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import toolkit.BSettings;
 import toolkit.BToolkit;
+import toolkit.ResourceManager;
+import toolkit.UIToolkit;
 
 /**
  *
@@ -52,16 +54,12 @@ public class HomeScreen extends BPanel {
         logoPane = new JComponent() {
             Image logo = BToolkit.getImage("logo");
             double logoEnlargement = 1.5;
-            Point pt = new Point(200 - (int) (logo.getWidth(null) * logoEnlargement) / 2, 200 - (int) (logo.getHeight(null) * logoEnlargement) / 2);
+            Point pt = new Point(250 - (int) (logo.getWidth(null) * logoEnlargement) / 2, 200 - (int) (logo.getHeight(null) * logoEnlargement) / 2);
 
             @Override
             public void paint(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setComposite(BToolkit.makeComposite(50));
-                g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                g2d.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+                Graphics2D g2d = UIToolkit.getPrettyGraphics(g);
+                g2d.setComposite(UIToolkit.makeComposite(50));
                 g2d.drawImage(logo, pt.x, pt.y, (int) (logo.getWidth(null) * logoEnlargement), (int) (logo.getHeight(null) * logoEnlargement), this);
             }
         };
@@ -128,7 +126,7 @@ public class HomeScreen extends BPanel {
             });
 
             candidateList = new AList(new HomeScreen.HomeScreenPanel.CandidatesListModel());
-            candidateList.setPreferredSize(new Dimension(180, 275));
+            candidateList.setPreferredSize(new Dimension(180, 310));
 
             //getCandidates
             ArrayList<AListItem> items = new ArrayList<>();
@@ -171,10 +169,14 @@ public class HomeScreen extends BPanel {
             }
 
             candidateList.setItems(items);
-            candidateList.getItems().get(0).setSelected(true);
+            
+            if(!candidateList.getItems().isEmpty()) {
+                candidateList.getItems().get(0).setSelected(true);
+            }
+            
 
             candidateDisplayPane = new HomeScreen.HomeScreenPanel.CandidateDisplayPane();
-            candidateDisplayPane.setPreferredSize(new Dimension(300, 300));
+            candidateDisplayPane.setPreferredSize(new Dimension(300, 345));
 
             candidateList.getModel().addSelectionListener(candidateList.getModel().new SelectionListener() {
                 @Override
@@ -196,21 +198,21 @@ public class HomeScreen extends BPanel {
             gc.weighty = 0;
             gc.ipadx = 0;
             gc.ipady = 0;
-            gc.insets = new Insets(40, 0, 0, 0);
+            gc.insets = new Insets(2, 0, 0, 0);
             gc.fill = GridBagConstraints.NONE;
-            gc.anchor = GridBagConstraints.SOUTHEAST;
+            gc.anchor = GridBagConstraints.CENTER;
             this.add(candidateList, gc);
 
             gc.gridy = 1;
-            gc.insets = new Insets(0, 0, 0, 10);
-            gc.anchor = GridBagConstraints.NORTHEAST;
+            gc.insets = new Insets(8, 0, 10, 0);
+            gc.anchor = GridBagConstraints.CENTER;
             this.add(voteButton, gc);
 
             gc.gridx = 1;
             gc.gridy = 0;
             gc.gridheight = 2;
-            gc.insets = new Insets(40, 0, 0, 0);
-            gc.anchor = GridBagConstraints.WEST;
+            gc.insets = new Insets(8, 0, 8, 8);
+            gc.anchor = GridBagConstraints.CENTER;
             this.add(candidateDisplayPane, gc);
 
         }
@@ -226,8 +228,8 @@ public class HomeScreen extends BPanel {
 
         @Override
         protected void paintComponent(Graphics g) {
-            Graphics2D g2d = (Graphics2D) g;
-            g2d.setComposite(BToolkit.makeComposite(panelOpacity));
+            Graphics2D g2d = UIToolkit.getPrettyGraphics(g);
+            g2d.setComposite(UIToolkit.makeComposite(panelOpacity));
         }
 
         public class CandidatesListModel extends AListModel {
@@ -277,11 +279,11 @@ public class HomeScreen extends BPanel {
 
             @Override
             protected void paintComponent(Graphics g) {
-                Graphics2D g2d = (Graphics2D) g;
+                Graphics2D g2d = UIToolkit.getPrettyGraphics(g);
                 g2d.setPaint(new Color(23, 23, 23, 200));
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-                g2d.setPaint(new Color(100, 0, 40));
-                g2d.setFont(BSettings.getFont().deriveFont(21f));
+                g2d.setPaint(AColor.fancyDarkBlue);
+                g2d.setFont(ResourceManager.getFont("Sax Mono").deriveFont(18f));
                 g2d.drawString(name, 100, 25);
             }
         }
