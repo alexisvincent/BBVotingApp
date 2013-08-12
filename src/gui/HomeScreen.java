@@ -9,6 +9,8 @@ import components.BButton;
 import components.BFooter;
 import components.BMenuBar;
 import components.BPanel;
+import components.BTextArea;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -18,10 +20,14 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import javax.swing.JComponent;
+import javax.swing.JTextArea;
+import javax.swing.Timer;
 import main.BBVotingApp;
 import networking.ASocket;
 import networking.Request;
@@ -42,14 +48,14 @@ public class HomeScreen extends BPanel {
     //declare components
 
     private BMenuBar menubar;
-    private HomeScreen.HomeScreenPanel statsScreenPanel;
+    private HomeScreen.HomeScreenPanel homeScreenPanel;
     private BFooter footer;
     private JComponent logoPane;
 
     public HomeScreen() {
         //init components
         menubar = new BMenuBar();
-        statsScreenPanel = new HomeScreen.HomeScreenPanel();
+        homeScreenPanel = new HomeScreen.HomeScreenPanel();
         footer = new BFooter();
         logoPane = new JComponent() {
             Image logo = BToolkit.getImage("logo");
@@ -80,7 +86,7 @@ public class HomeScreen extends BPanel {
 
         gc.gridy = 1;
         gc.weighty = 1;
-        this.add(statsScreenPanel, gc);
+        this.add(homeScreenPanel, gc);
 
         gc.gridy = 2;
         gc.weighty = 0;
@@ -97,9 +103,9 @@ public class HomeScreen extends BPanel {
     }
 
     public HomeScreen.HomeScreenPanel getHomeScreenPanel() {
-        return statsScreenPanel;
+        return homeScreenPanel;
     }
-    
+
     class HomeScreenPanel extends JComponent {
 
         private GridBagConstraints gc;
@@ -117,63 +123,26 @@ public class HomeScreen extends BPanel {
             voteButton = new BButton("VOTE");
             voteButton.setPreferredSize(new Dimension(160, 30));
             voteButton.addMouseListener(new MouseAdapter() {
-
                 @Override
                 public void mouseReleased(MouseEvent e) {
                     MainFrame.getVotersKeyOverlay().setVisible(true);
                 }
-                
             });
 
             candidateList = new AList(new HomeScreen.HomeScreenPanel.CandidatesListModel());
             candidateList.setPreferredSize(new Dimension(180, 310));
 
-            //getCandidates
-            ArrayList<AListItem> items = new ArrayList<>();
-            Element rootElement = new Element("Request");
-            rootElement.setAttribute("RequestType", "Candidates");
-            rootElement.setAttribute("From", "VotingApp");
-
-            Document document = new Document(rootElement);
-            ASocket socket = BBVotingApp.getNetworkingClient().getSocket();
-            Request request = new Request(document, socket);
-            Responce responce = socket.postRequest(request);
-
-            if (responce.getResponceCode().equals("200")) {
-
-                String id = "";
-                String name = "";
-                String info = "";
-                Image image = null;
-
-                rootElement = responce.getRootElement();
-                ArrayList<Candidate> candidates = new ArrayList<>();
-                int candidateCount = Integer.parseInt(rootElement.getAttributeValue("CandidatesCount"));
-
-                for (int i = 1; i < candidateCount + 1; i++) {
-                    Element candidateElement = rootElement.getChild("Candidate" + i);
-                    id = candidateElement.getAttributeValue("ID");
-                    name = candidateElement.getAttributeValue("Name");
-                    info = candidateElement.getAttributeValue("Info");
-                    image = null;
-
-                    candidates.add(new Candidate(id, name, info, image));
+            Timer updater = new Timer(2000, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        updateList();
+                    } catch (Exception ex) {
+                        System.out.println(e);
+                    }
                 }
-
-                for (Candidate candidate : candidates) {
-                    items.add(new HomeScreen.HomeScreenPanel.CandidateListItem(candidate));
-                }
-
-            } else {
-                System.out.println("Could not get Candidates from server");
-            }
-
-            candidateList.setItems(items);
-            
-            if(!candidateList.getItems().isEmpty()) {
-                candidateList.getItems().get(0).setSelected(true);
-            }
-            
+            });
+            updater.start();
 
             candidateDisplayPane = new HomeScreen.HomeScreenPanel.CandidateDisplayPane();
             candidateDisplayPane.setPreferredSize(new Dimension(300, 345));
@@ -181,11 +150,13 @@ public class HomeScreen extends BPanel {
             candidateList.getModel().addSelectionListener(candidateList.getModel().new SelectionListener() {
                 @Override
                 public void itemSelected(AListItem item) {
-                    candidateDisplayPane.setName(((HomeScreen.HomeScreenPanel.CandidateListItem) item).getCandidate().getName());
-                    candidateDisplayPane.setInfo(((HomeScreen.HomeScreenPanel.CandidateListItem) item).getCandidate().getInfo());
-                    candidateDisplayPane.setImage(((HomeScreen.HomeScreenPanel.CandidateListItem) item).getCandidate().getImage());
+                    candidateDisplayPane.setCandidate(((HomeScreen.HomeScreenPanel.CandidateListItem) item).getCandidate());
                 }
             });
+
+            if (!candidateList.getItems().isEmpty()) {
+                candidateList.getItems().get(0).setSelected(true);
+            }
 
             //begin adding le variabili
             this.setLayout(new GridBagLayout());
@@ -214,6 +185,76 @@ public class HomeScreen extends BPanel {
             gc.insets = new Insets(8, 0, 8, 8);
             gc.anchor = GridBagConstraints.CENTER;
             this.add(candidateDisplayPane, gc);
+
+        }
+
+        public void updateList() {
+            //getCandidates
+            ArrayList<AListItem> items = new ArrayList<>();
+            Element rootElement = new Element("Request");
+            rootElement.setAttribute("RequestType", "Candidates");
+            rootElement.setAttribute("From", "VotingApp");
+
+            Document document = new Document(rootElement);
+            ASocket socket = BBVotingApp.getNetworkingClient().getSocket();
+            Request request = new Request(document, socket);
+            Responce responce = null;
+
+            try {
+                responce = socket.postRequest(request);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+
+            if (responce != null && responce.getResponceCode().equals("200")) {
+
+                rootElement = responce.getRootElement();
+                ArrayList<Candidate> candidates = new ArrayList<>();
+                int candidateCount = Integer.parseInt(rootElement.getAttributeValue("CandidatesCount"));
+
+                for (int i = 1; i < candidateCount + 1; i++) {
+                    Element candidateElement = rootElement.getChild("Candidate" + i);
+                    String id = candidateElement.getAttributeValue("ID");
+                    String name = candidateElement.getAttributeValue("Name");
+                    String info = candidateElement.getAttributeValue("Info");
+                    String image = candidateElement.getAttributeValue("Image");
+
+                    candidates.add(new Candidate(id, name, info, image));
+                }
+
+                for (Candidate candidate : candidates) {
+                    items.add(new HomeScreen.HomeScreenPanel.CandidateListItem(candidate));
+                }
+
+            } else {
+                items.add(new HomeScreen.HomeScreenPanel.CandidateListItem(new Candidate("", "Server Offline", "", "")));
+                System.out.println("Could not get Candidates from server");
+            }
+
+
+            AListItem selectedItem = null;
+            String previouslySelectedIndex = null;
+
+            try {
+                previouslySelectedIndex = ((CandidateListItem) candidateList.getSelectedItem()).getCandidate().getId();
+            } catch (Exception e) {
+            }
+
+            for (AListItem aListItem : items) {
+                if (((CandidateListItem) aListItem).getCandidate().getId().equals(previouslySelectedIndex)) {
+                    selectedItem = aListItem;
+                }
+            }
+
+            candidateList.setItems(items);
+
+            revalidate();
+            repaint();
+
+            if (selectedItem != null) {
+                candidateList.setSelectedItem(selectedItem);
+            }
+
 
         }
 
@@ -253,14 +294,52 @@ public class HomeScreen extends BPanel {
             private String name;
             private String info;
             private Image image;
+            private JTextArea infoField;
 
             public CandidateDisplayPane() {
-                name = ((HomeScreen.HomeScreenPanel.CandidateListItem)HomeScreen.HomeScreenPanel.this.candidateList.getSelectedItem()).getCandidate().getName();
-                info = ((HomeScreen.HomeScreenPanel.CandidateListItem)HomeScreen.HomeScreenPanel.this.candidateList.getSelectedItem()).getCandidate().getInfo();
-                image = ((HomeScreen.HomeScreenPanel.CandidateListItem)HomeScreen.HomeScreenPanel.this.candidateList.getSelectedItem()).getCandidate().getImage();
+
+                name = "";
+                info = "";
+                image = null;
+
+                infoField = new JTextArea() {
+
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        super.paintComponent(g);
+                    }
+                    
+                };
+                infoField.setBackground(new Color(0,0,0,0));
+                infoField.setSize(new Dimension(100, 100));
+                infoField.setEditable(false);
+                infoField.setFont(ResourceManager.getFont("Sax Mono").deriveFont(14f));
+                infoField.setForeground(AColor.fancyDarkBlue);
+
+                this.setLayout(new GridBagLayout());
+                GridBagConstraints gc = new GridBagConstraints();
+                gc.gridx = 0;
+                gc.gridy = 0;
+                gc.gridwidth = 1;
+                gc.gridheight = 1;
+                gc.weightx = 1;
+                gc.weighty = 1;
+                gc.ipadx = 0;
+                gc.ipady = 0;
+                gc.insets = new Insets(70, 20, 50, 20);
+                gc.fill = GridBagConstraints.BOTH;
+                gc.anchor = GridBagConstraints.CENTER;
+
+                this.add(infoField, gc);
             }
 
-            
+            public void setCandidate(Candidate candidate) {
+                setName(candidate.getName());
+                setInfo(candidate.getInfo());
+                infoField.setText(info);
+                //setImage(candidate.getImage());
+            }
+
             @Override
             public void setName(String name) {
                 this.name = name;
@@ -283,8 +362,14 @@ public class HomeScreen extends BPanel {
                 g2d.setPaint(new Color(23, 23, 23, 200));
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 g2d.setPaint(AColor.fancyDarkBlue);
+
                 g2d.setFont(ResourceManager.getFont("Sax Mono").deriveFont(18f));
-                g2d.drawString(name, 100, 25);
+                if (name.length() > 25) {
+                    g2d.drawString(name.substring(0, 23) + "...", 20, 40);
+                } else {
+                    g2d.drawString(name, 20, 40);
+                }
+
             }
         }
 
